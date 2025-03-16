@@ -1,20 +1,21 @@
+import { statusBar } from '../commons/utils';
+
 @Entry
 @Component
 struct Index {
-  @State message: string = 'Hello World';
-
   build() {
-    RelativeContainer() {
-      Text(this.message)
-        .id('HelloWorld')
-        .fontSize(50)
-        .fontWeight(FontWeight.Bold)
-        .alignRules({
-          center: { anchor: '__container__', align: VerticalAlign.Center },
-          middle: { anchor: '__container__', align: HorizontalAlign.Center }
-        })
+    Column() {
+      Text('123')
+      Button('浅色').onClick(()=>{
+        statusBar.setLightBar()
+      })
+      Button('深').onClick(()=>{
+        statusBar.setDarkBar()
+      })
     }
     .height('100%')
     .width('100%')
+    .justifyContent(FlexAlign.SpaceEvenly)
+    .backgroundColor(Color.Pink)
   }
 }
