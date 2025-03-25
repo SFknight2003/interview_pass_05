@@ -33,7 +33,7 @@ export struct HomePage {
         })
         // 打卡
         ClockIn({
-          clockCount : 999
+          clockCount : 0
         })
       }
       .height(48)

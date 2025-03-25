@@ -1,7 +1,8 @@
+// @Entry
 @Component
 export struct ClockIn {
   @Prop
-  clockCount:number
+  clockCount:number = 0
   build() {
     Row(){
       if (this.clockCount === 0) {

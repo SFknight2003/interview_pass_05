@@ -1,3 +1,5 @@
+import { logger } from '../utils'
+
 export * from './SearchBox'
 export * from './ClockIn'
 export * from './CustomCalendar'
@@ -6,3 +8,4 @@ export * from './QuestionItemComp'
 export * from './QuestionListComp'
 export * from './HmSkeleton'
 export * from './HmSkeletonItem'
+export * from './HmNavBar'
