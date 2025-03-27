@@ -1,6 +1,6 @@
 import { HmNavBar } from '../common/components/HmNavBar'
 import { promptAction, router } from '@kit.ArkUI'
-import { http, logger } from '../common/utils'
+import { http, logger, auth, UserStoreKey } from '../common/utils'
 import { LoginParams, User } from '../models'
 
 @Entry
@@ -45,7 +45,9 @@ struct LoginPage {
     })
     console.log('interview_pass_log','LoginPage','46=>',user.totalTime)
     this.loading = false
-    AppStorage.setOrCreate('user', user)
+    // 调用持久化工具存储
+    // AppStorage.setOrCreate('user', user)
+    auth.setUser(user)
     router.back()
   }
 

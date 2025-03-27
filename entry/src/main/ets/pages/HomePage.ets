@@ -1,9 +1,12 @@
 import { CustomCalendar, ClockIn, SearchBox } from "../common/components"
+import { UserStoreKey } from "../common/utils"
 import { HomeCategory } from "../common/views/Home/HomeCategory"
+import { User } from "../models"
 
 @Component
 export struct HomePage {
   @StorageLink('topHeight') topHeight : number = 0
+  @StorageLink(UserStoreKey) user:User = {} as User
   @Builder
   SwiperBuilder(str:ResourceStr){ // 传入图片地址
     Row(){
@@ -33,7 +36,7 @@ export struct HomePage {
         })
         // 打卡
         ClockIn({
-          clockCount : 0
+          clockCount : this.user.clockinNumbers
         })
       }
       .height(48)

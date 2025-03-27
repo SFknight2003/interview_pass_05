@@ -1,7 +1,8 @@
 import { router } from '@kit.ArkUI'
 import { ClockIn } from '../common/components'
-import { statusBar, formatTime } from '../common/utils'
+import { statusBar, formatTime, UserStoreKey, logger,http } from '../common/utils'
 import { User } from '../models'
+import { JSON } from '@kit.ArkTS'
 
 interface Nav {
   icon: ResourceStr
@@ -20,8 +21,9 @@ interface Tool {
 @Component
 export struct MinePage {
   // 获取user对象
-  @StorageProp('user')
-  user: User = {} as User
+  // @StorageProp('user')
+  // user: User = {} as User
+  @StorageProp(UserStoreKey) user: User = {} as User
   @StorageProp('topHeight')
   topHeight: number = 0
 
@@ -164,7 +166,11 @@ export struct MinePage {
             // TODO
           }
         })
-        this.toolsBuilder({ icon: $r('app.media.ic_mine_ai'), name: '面通AI' })
+        this.toolsBuilder({ icon: $r('app.media.ic_mine_ai'), name: '面通AI', onClick:()=>{
+          // router.pushUrl({
+          //   url:'pages/SocketAI'
+          // })
+        } })
         this.toolsBuilder({ icon: $r('app.media.ic_mine_invite'), name: '推荐分享' })
         this.toolsBuilder({ icon: $r('app.media.ic_mine_file'), name: '意见反馈' })
         this.toolsBuilder({ icon: $r('app.media.ic_mine_info'), name: '关于我们' })
@@ -176,6 +182,19 @@ export struct MinePage {
       }
       .backgroundColor($r('app.color.white'))
       .borderRadius(8)
+
+      /**
+       * @Description: 测试代码
+       */
+      // Column(){
+      //   Button('获取用户信息')
+      //     .onClick(async ()=>{
+      //       const res = await http.request<string>({
+      //         url:'hm/userInfo'
+      //       })
+      //       logger.info(JSON.stringify(res))
+      //     })
+      // }
 
     }
     .padding(16)

@@ -2,10 +2,15 @@ import { HomePage } from './HomePage';
 import { ProjectPage } from './ProjectPage';
 import { InterviewPage } from './InterviewPage';
 import { MinePage } from './MinePage';
+import { auth } from '../common/utils';
 
 /**
  * @Description: 主框架页面
  */
+
+// 进行持久化声明
+auth.initUser()
+
 // 数据定义
 interface TabItems{
   icon:Resource,

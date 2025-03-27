@@ -1,5 +1,7 @@
-import axios, { AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from "@ohos/axios"
-import { promptAction } from "@kit.ArkUI"
+import axios, { AxiosError, AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from "@ohos/axios"
+import { promptAction, router } from "@kit.ArkUI"
+import { auth } from "."
+import { User } from "../../models"
 
 // 后台给的数据结构定死了
 interface Res<T> {
@@ -26,6 +28,11 @@ const instance = axios.create({
     // config 请求配置（请求头，地址，参数等）
 instance.interceptors.request.use((config:InternalAxiosRequestConfig)=>{
   // TODO:业务：携带登录信息
+  const user = auth.getUser();
+  // 有token传token
+  if (user.token) {
+    config.headers.Authorization = `Bearer ${user.token}`
+  }
   return config
 },(err:Error)=>{  // 错误返回一个Error对象
   promptAction.showToast({
@@ -45,7 +52,22 @@ instance.interceptors.response.use((res:AxiosResponse)=>{
   // 2、接口没调通
   // 错误信息
   return Promise.reject(new Error(JSON.stringify(res.data)))
-}, (err:Error)=>{
+}, (err:AxiosError)=>{
+  // 401登录失效
+  if (err.response?.status === 401) {
+    // 提示：登录失败
+    promptAction.showToast({
+      message:'登录失败，请重新登录'
+    })
+    // 1、重新登录 - 删除无效token
+    // 2、无感刷新 - refreshToken 获取新的token写入，重新请求err.config
+    auth.setUser({} as User)
+    // 跳转登录页面（历史记录只有一个登录页面）
+    router.pushUrl({
+      url:'pages/LoginPage'
+    },router.RouterMode.Single)
+    return
+  }
   promptAction.showToast({
     message:'响应错误：' + err.message
   })

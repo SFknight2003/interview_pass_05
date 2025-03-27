@@ -20,7 +20,7 @@ export struct ClockIn {
             .fontSize(10)
             .fontColor($r('app.color.black'))
           Text(){
-            Span((this.clockCount > 999) ? '999' : this.clockCount.toString())  // ui限制最大值999
+            Span((this.clockCount > 999) ? '999' : this.clockCount?.toString() || '0')   // ui限制最大值999
               .fontSize(12)
               .fontWeight(FontWeight.Bold)
             Span(' 天')
