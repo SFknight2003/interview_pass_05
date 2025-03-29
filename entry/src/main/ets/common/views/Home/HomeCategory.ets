@@ -1,5 +1,5 @@
 import { HmSkeleton, HmSkeletonItem, HmTag, QuestionItemComp, QuestionListComp } from "../../components"
-import { http } from "../../utils"
+import { http, UserStoreKey } from "../../utils"
 import { Filter, promptAction } from "@kit.ArkUI"
 import { QuestionItem, SortType } from "../../../models"
 
@@ -185,6 +185,12 @@ export struct HomeCategory {
     // <QuestionType[]>是响应结果的类型
     // string是请求参数的类型
     this.getQuestionTypeList()
+    // 订阅 - 保证自己能更新
+    // 接收 - 线程内 - eventhub
+    getContext().eventHub.on(UserStoreKey,()=>{
+      // 监听到需要做什么
+      this.getQuestionTypeList()
+    })
   }
 
   build() {

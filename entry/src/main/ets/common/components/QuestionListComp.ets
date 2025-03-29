@@ -1,7 +1,8 @@
 import { QuestionItemComp } from '.'
 import { PageData, QuestionItem, QuestionListParams, SortType } from '../../models'
 import { http } from '../utils/Http'
-import { promptAction } from '@kit.ArkUI'
+import { promptAction, router } from '@kit.ArkUI'
+import { auth } from '../utils'
 
 @Component
 export struct QuestionListComp {
@@ -119,6 +120,15 @@ export struct QuestionListComp {
           ListItem() {
             QuestionItemComp({
               item
+            }).onClick(()=>{
+              // 不鉴权直接跳转
+              // router.pushUrl({
+              //   url:'pages/QuestionPage'
+              // })
+              // 鉴权
+              auth.checkAuth({
+                url:'pages/QuestionPage'
+              })
             })
           }
         })

@@ -1,7 +1,8 @@
 import { CustomCalendar, ClockIn, SearchBox } from "../common/components"
-import { UserStoreKey } from "../common/utils"
+import { auth, UserStoreKey } from "../common/utils"
 import { HomeCategory } from "../common/views/Home/HomeCategory"
 import { User } from "../models"
+import { promptAction } from "@kit.ArkUI"
 
 @Component
 export struct HomePage {
@@ -29,6 +30,14 @@ export struct HomePage {
         Image($r('app.media.ic_home_scan'))
           .width(24)
           .aspectRatio(1)
+          // 先检测是否有权限，有-点击，没有-登录-自动重点
+          .onClick(()=>{
+            auth.checkAuth(()=>{
+              promptAction.showToast({
+                message:'扫码ing'
+              })
+            })
+          })
         // 搜索 - 封装组件
         SearchBox({
           placeholder : '搜索题目',

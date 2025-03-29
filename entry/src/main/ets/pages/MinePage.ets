@@ -1,6 +1,6 @@
 import { router } from '@kit.ArkUI'
 import { ClockIn } from '../common/components'
-import { statusBar, formatTime, UserStoreKey, logger,http } from '../common/utils'
+import { statusBar, formatTime, UserStoreKey, logger,http, auth } from '../common/utils'
 import { User } from '../models'
 import { JSON } from '@kit.ArkTS'
 
@@ -186,16 +186,12 @@ export struct MinePage {
       /**
        * @Description: 测试代码
        */
-      // Column(){
-      //   Button('获取用户信息')
-      //     .onClick(async ()=>{
-      //       const res = await http.request<string>({
-      //         url:'hm/userInfo'
-      //       })
-      //       logger.info(JSON.stringify(res))
-      //     })
-      // }
-
+      Column(){
+        Button('退出登录')
+          .onClick(async ()=>{
+            auth.setUser({} as User)
+          })
+      }
     }
     .padding(16)
     .backgroundColor($r('app.color.common_gray_bg'))
