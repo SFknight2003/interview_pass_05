@@ -43,12 +43,12 @@ struct LoginPage {
         password : this.code
       }
     })
-    console.log('interview_pass_log','LoginPage','46=>',user.totalTime)
     this.loading = false
     // 调用持久化工具存储
     // AppStorage.setOrCreate('user', user)
     auth.setUser(user)
     getContext().eventHub.emit(UserStoreKey)
+    console.log('interview_pass_log','LoginPage','51=>','user:' + user.token)
     // 跳转判断
     const params = router.getParams() as Record<string,string>
     if (params) {

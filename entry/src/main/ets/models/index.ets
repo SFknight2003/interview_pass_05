@@ -15,14 +15,31 @@ export interface QuestionItem {
   readFlag: 0 | 1;
 }
 
-// TODO: 响应结果
+// 详情数据
+export interface QuestionDetail extends QuestionItem {  // 继承QuestionItem再添加字段
+  /* 答案 */
+  answer: string
+  /* 是否收藏 */
+  collectFlag: 0 | 1
+  /* 是否点赞 */
+  likeFlag: 0 | 1
+  /* 所属模块 */
+  stage: string[]
+}
+
+export interface QuestionPageParams {
+  item: QuestionItem,
+  list: QuestionItem[]
+}
+
+// 响应结果
 export interface PageData<T> {
   total: number
   pageTotal: number
   rows: T[]
 }
 
-// TODO: 难度排序
+// 难度排序
 export enum SortType {
   Default = 0,
   DifficultyLow = 10,
@@ -32,7 +49,7 @@ export enum SortType {
   Commend = 30    // 推荐
 }
 
-// TODO: 请求参数
+// 请求参数
 export interface QuestionListParams {
   type: number
   questionBankType: 9 | 10
@@ -57,3 +74,4 @@ export interface LoginParams {
   username:string
   password:string
 }
+

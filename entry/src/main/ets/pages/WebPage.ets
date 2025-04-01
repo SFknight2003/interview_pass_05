@@ -6,7 +6,10 @@ interface WebPageParams {
   title: string
   src: string
 }
-
+/**
+ * @Description: 用户协议页面
+ * @about: 用户协议、隐私协议
+ */
 @Entry
 @Component
 struct WebPage {

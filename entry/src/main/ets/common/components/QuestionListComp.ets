@@ -1,5 +1,5 @@
 import { QuestionItemComp } from '.'
-import { PageData, QuestionItem, QuestionListParams, SortType } from '../../models'
+import { PageData, QuestionDetail, QuestionItem, QuestionListParams, QuestionPageParams, SortType } from '../../models'
 import { http } from '../utils/Http'
 import { promptAction, router } from '@kit.ArkUI'
 import { auth } from '../utils'
@@ -125,9 +125,13 @@ export struct QuestionListComp {
               // router.pushUrl({
               //   url:'pages/QuestionPage'
               // })
-              // 鉴权
+              // 鉴权 - 跳转页面
               auth.checkAuth({
-                url:'pages/QuestionPage'
+                url:'pages/QuestionPage',
+                params: {
+                  item,
+                  list: this.list
+                } as QuestionPageParams
               })
             })
           }
