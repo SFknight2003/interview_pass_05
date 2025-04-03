@@ -28,7 +28,7 @@ const instance = axios.create({
     // config 请求配置（请求头，地址，参数等）
 instance.interceptors.request.use((config:InternalAxiosRequestConfig)=>{
   // TODO:业务：携带登录信息
-  const user = auth.getUser();
+  const user = auth.getUser()
   // 有token传token
   if (user.token) {
     config.headers.Authorization = `Bearer ${user.token}`
@@ -55,6 +55,7 @@ instance.interceptors.response.use((res:AxiosResponse)=>{
 }, (err:AxiosError)=>{
   // 401登录失效
   if (err.response?.status === 401) {
+    console.log('interview_pass_log','Http','58=>','登录失败'+err)
     // 提示：登录失败
     promptAction.showToast({
       message:'登录失败，请重新登录'
@@ -78,7 +79,7 @@ instance.interceptors.response.use((res:AxiosResponse)=>{
 
 class Http {
   //ResponseData 是调用时传递的类型，标识返回值的类型
-  request<ResponseData,RequestData = object>(config:AxiosRequestConfig<RequestData>) {  // 给请求参数默认值
+  request<ResponseData,RequestData = Object>(config:AxiosRequestConfig<RequestData>) {  // 给请求参数默认值
     // 二次封装：传递参数，该修改的地方修改 该包装的地方包装
     // 1、只需要传递相应结果的类型
       // null泛型接收的参数

@@ -1,5 +1,5 @@
-import { HmNavBar, HmTag } from '../common/components'
-import { QuestionDetail, QuestionPageParams } from '../models'
+import { HmLoadingDialog, HmNavBar, HmTag } from '../common/components'
+import { QuestionDetail, QuestionOptParams, QuestionPageParams } from '../models'
 import { promptAction, router } from '@kit.ArkUI'
 import { http } from '../common/utils'
 import { webview } from '@kit.ArkWeb'
@@ -12,9 +12,14 @@ struct QuestionPage {
   @State item: QuestionDetail = {} as QuestionDetail
   list: QuestionDetail[] = []
   @State activeIndex:number = 0
-
+  // 网页控制器
   controller:WebviewController = new webview.WebviewController
-
+  // 弹层控制器
+  loadingController = new CustomDialogController({
+    builder: HmLoadingDialog(),
+    customStyle: true,    // 自定义样式
+    alignment: DialogAlignment.Center   // 对齐方式
+  })
   async aboutToAppear() {
     // 跟新页面启动参数
     const params = router.getParams() as QuestionPageParams
@@ -22,15 +27,16 @@ struct QuestionPage {
     this.list = params.list as QuestionDetail[]
     // 找到当前页面在list中的下标
     this.activeIndex = this.list.findIndex(item => item.id === this.item.id)
-
     this.item = await this.getQuestionDetail(this.item.id)
+    // 列表缓存
+    this.list[this.activeIndex] = this.item
     // 拿到数据后刷新一次页面
     this.controller.loadUrl($rawfile('question.html'))
   }
 
   /**
    * @Description:切换方法
-   * @about: 掺入参数步数，下一题1 上一题-1
+   * @about: 传入参数步数，下一题1 上一题-1
    */
   async toggleQuestion (step: number) {
     // 更新索引
@@ -40,24 +46,67 @@ struct QuestionPage {
       return promptAction.showToast({ message: '没有更多题了' })
     }
     this.activeIndex = index
-    const item = this.list[index]
-    // TODO：请求过的答案进行缓存
+    const item = this.list[index]   // 从list中获取数据
+    // 请求过的答案进行缓存
+    // 第一轮传入进来的list只包含QuestionItem的内容，没有answer
+    // 如果此时item没有answer则发送请求 并把list中的值替换成内容
+    if ( item.answer ) {
+      this.item = item
+    } else {
+      this.item = await this.getQuestionDetail(item.id)
+      this.list[index] = this.item  // 更新列表，存储缓存
+    }
     // TODO：加载页面loading
     // TODO：点赞收藏
-    // TODO：上一题/下一题高亮
     // 传入id 获取页面内容
-    this.item = await this.getQuestionDetail(item.id)
     // 重新加载web答案部分页面
     // this.controller.loadUrl($rawfile('question.html'))
     // 重新运行脚本内容
     this.controller.runJavaScript(`writeHtml(\`${this.item.answer}\`)`)
   }
 
+  /**
+   * @Description: 点赞 | 收藏
+   * @about: 传入参数：optType 点赞/收藏  flag 是否已点赞/收藏
+   */
+  async questionOpt(optType: 1 | 2, flag: 0 | 1) {
+    try {
+      // 请求参数
+      const data: QuestionOptParams = {
+        id: this.item.id,
+        type: 0,  // 试题
+        optType   // 点赞/收藏
+      }
+      // flag 是你要执行的操作 执行 | 取消
+      await http.request<null, QuestionOptParams>({
+        url: flag === 1 ? 'hm/question/opt' : 'hm/question/unOpt',  // 1 发送点赞/收藏请求
+        method: 'post',
+        data
+      })
+      // 修改值
+      if (optType === 1) {
+        // 点赞
+        promptAction.showToast({ message: this.item.likeFlag === 0 ? '点赞成功' : '取消点赞' })
+        // 因为不再请求，手动前台数据刷新
+        this.item.likeFlag === 0 ? this.item.likeFlag = 1 : this.item.likeFlag = 0
+      }
+      if (optType === 2) {
+        // 收藏
+        promptAction.showToast({ message: this.item.collectFlag === 0 ? '收藏成功' : '取消收藏' })
+        this.item.collectFlag === 0 ? this.item.collectFlag = 1 : this.item.collectFlag = 0
+      }
+    } catch (e) {
+      promptAction.showToast({ message: '操作失败' })
+    }
+  }
+
   // 请求试题详情
   async getQuestionDetail(id:string){
+    this.loadingController.open()
     const result = await http.request<QuestionDetail>({
       url : 'hm/question/' + id
     })
+    this.loadingController.close()
     return result
   }
 
@@ -81,7 +130,9 @@ struct QuestionPage {
   MenuBuilder() {
     Menu() {
       MenuItem({ content: '点赞' })
+        .onClick(() => this.questionOpt(1, this.item.likeFlag === 0 ? 1 : 0))   // likeFlag 0未赞，1点赞
       MenuItem({ content: '收藏' })
+        .onClick(() => this.questionOpt(2, this.item.collectFlag === 0 ? 1 : 0))
       MenuItem({ content: '点我反馈' })
       MenuItem({ content: '试题分享' })
     }
@@ -129,13 +180,14 @@ struct QuestionPage {
         })
 
       Row({ space: 80 }) {
+        // 上一题/下一题高亮
         Row() {
           Image($r('sys.media.ohos_ic_public_arrow_left'))
             .width(20)
             .aspectRatio(1)
-            .fillColor($r('app.color.common_gray_01'))
+            .fillColor(this.activeIndex <= 0 ? $r('app.color.common_gray_01') : $r('app.color.common_gray_03'))
           Text(' 上一题')
-            .fontColor($r('app.color.common_gray_01'))
+            .fontColor(this.activeIndex <= 0 ? $r('app.color.common_gray_01') : $r('app.color.common_gray_03'))
         }
         .onClick(()=>{
           this.toggleQuestion(-1)
@@ -143,11 +195,11 @@ struct QuestionPage {
 
         Row() {
           Text('下一题 ')
-            .fontColor($r('app.color.common_gray_03'))
+            .fontColor(this.activeIndex >= this.list.length-1 ? $r('app.color.common_gray_01') : $r('app.color.common_gray_03'))
           Image($r('sys.media.ohos_ic_public_arrow_right'))
             .width(20)
             .aspectRatio(1)
-            .fillColor($r('app.color.common_gray_03'))
+            .fillColor(this.activeIndex >= this.list.length-1 ? $r('app.color.common_gray_01') : $r('app.color.common_gray_03'))
         }
         .onClick(()=>{
           this.toggleQuestion(1)

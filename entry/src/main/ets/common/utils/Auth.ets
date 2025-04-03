@@ -1,6 +1,5 @@
 import { User } from '../../models'
 import { router } from '@kit.ArkUI'
-import { url } from '@kit.ArkTS'
 
 export const UserStoreKey = 'UserStoreKey'
 

@@ -27,6 +27,14 @@ export interface QuestionDetail extends QuestionItem {  // 继承QuestionItem再
   stage: string[]
 }
 
+export interface QuestionOptParams {
+  id: string
+  /* 0 试题  2 面经 */
+  type: 0 | 1
+  /* 1 点赞  2 收藏 */
+  optType: 1 | 2
+}
+
 export interface QuestionPageParams {
   item: QuestionItem,
   list: QuestionItem[]
