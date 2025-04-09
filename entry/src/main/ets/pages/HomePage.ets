@@ -1,8 +1,10 @@
 import { CustomCalendar, ClockIn, SearchBox } from "../common/components"
-import { auth, UserStoreKey } from "../common/utils"
+import { auth, http, UserStoreKey } from "../common/utils"
 import { HomeCategory } from "../common/views/Home/HomeCategory"
-import { User } from "../models"
-import { promptAction } from "@kit.ArkUI"
+import { QuestionDetail, QuestionItem, User } from "../models"
+import { promptAction, router } from "@kit.ArkUI"
+import { scanBarcode } from "@kit.ScanKit"
+import { JSON } from "@kit.ArkTS"
 
 @Component
 export struct HomePage {
@@ -22,6 +24,52 @@ export struct HomePage {
       left:16
     })
   }
+  // 唤起相机扫码
+  async scanCode(){
+    // 拓展：一多能力（功能级一多） 一次开发多端部署
+    /*
+    if( canIUse('SystemCapability.Multimedia.Scan.ScanBarcode')){
+      const res = await scanBarcode.startScanForResult(getContext())
+      const item = http.request<QuestionDetail>({
+        url:'hm/question' + res.originalValue
+      })
+      if(!item){
+        promptAction.showToast({ message:"请扫有效二维码" })
+      }
+      router.pushUrl({
+        url:'pages/QuestionPage',
+        params: { item, list: [item] }
+      })
+    } else { promptAction.showToast({ message:"当前设备不支持扫码" }) }
+     */
+    // 1、唤起扫码界面
+    try{
+      // 正常唤起
+      // 唤起扫码界面
+      const res = await scanBarcode.startScanForResult(getContext())
+      // 获取当前的item
+      const item = http.request<QuestionDetail>({
+        url:'hm/question' + res.originalValue // 传入扫码获得的结果
+      })
+      // 无返回提示
+      if(!item){
+        promptAction.showToast({ message:"请扫有效二维码" })
+      }
+      // 带参跳转
+      router.pushUrl({
+        url:'pages/QuestionPage',
+        params: {
+          item,
+          list: [item]
+        }
+      })
+    } catch (e) {
+      promptAction.showToast({
+        message:'当前设备不支持扫码'
+      })
+    }
+  }
+
   build() {
     Column(){
       // TODO: 扫码组件
@@ -33,9 +81,8 @@ export struct HomePage {
           // 先检测是否有权限，有-点击，没有-登录-自动重点
           .onClick(()=>{
             auth.checkAuth(()=>{
-              promptAction.showToast({
-                message:'扫码ing'
-              })
+              // 执行扫码方法
+              this.scanCode()
             })
           })
         // 搜索 - 封装组件

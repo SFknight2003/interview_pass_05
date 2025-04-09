@@ -3,6 +3,7 @@ import { QuestionDetail, QuestionOptParams, QuestionPageParams } from '../models
 import { promptAction, router } from '@kit.ArkUI'
 import { http } from '../common/utils'
 import { webview } from '@kit.ArkWeb'
+import { QuestionShareDialog } from '../common/views/question/QuestionShareDialog'
 
 @Entry
 @Component
@@ -14,11 +15,17 @@ struct QuestionPage {
   @State activeIndex:number = 0
   // 网页控制器
   controller:WebviewController = new webview.WebviewController
-  // 弹层控制器
+  // 加载弹层控制器
   loadingController = new CustomDialogController({
     builder: HmLoadingDialog(),
     customStyle: true,    // 自定义样式
     alignment: DialogAlignment.Center   // 对齐方式
+  })
+  // 分享弹层控制器
+  shareDialog = new CustomDialogController({
+    builder: QuestionShareDialog({ item: this.item }),  // 传递当前的item
+    customStyle: true,
+    alignment: DialogAlignment.Center // 对其方式
   })
   async aboutToAppear() {
     // 跟新页面启动参数
@@ -135,6 +142,7 @@ struct QuestionPage {
         .onClick(() => this.questionOpt(2, this.item.collectFlag === 0 ? 1 : 0))
       MenuItem({ content: '点我反馈' })
       MenuItem({ content: '试题分享' })
+        .onClick(()=>{this.shareDialog.open()})
     }
     .width(108)
   }
