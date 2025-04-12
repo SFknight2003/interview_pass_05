@@ -64,6 +64,7 @@ export interface QuestionListParams {
   sort?: SortType
   page?: number
   pageSize?: number
+  keyword?:string // 用于搜索
 }
 
 export interface User {
@@ -83,3 +84,9 @@ export interface LoginParams {
   password:string
 }
 
+// 埋点
+export interface TimeItem {
+  questionId: string
+  startTime: number
+  endTime: number
+}

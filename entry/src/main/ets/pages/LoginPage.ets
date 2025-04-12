@@ -1,6 +1,6 @@
 import { HmNavBar } from '../common/components/HmNavBar'
 import { promptAction, router } from '@kit.ArkUI'
-import { http, logger, auth, UserStoreKey } from '../common/utils'
+import { http, logger, auth, UserStoreKey, tracking } from '../common/utils'
 import { LoginParams, User } from '../models'
 
 @Entry
@@ -49,6 +49,8 @@ struct LoginPage {
     auth.setUser(user)
     getContext().eventHub.emit(UserStoreKey)
     console.log('interview_pass_log','LoginPage','51=>','user:' + user.token)
+    // 登录后进行一次埋点上送
+    tracking.report(true)
     // 跳转判断
     const params = router.getParams() as Record<string,string>
     if (params) {

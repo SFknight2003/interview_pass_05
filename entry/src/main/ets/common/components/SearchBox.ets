@@ -1,3 +1,5 @@
+import { router } from "@kit.ArkUI"
+
 @Component
 export struct SearchBox {
   @Prop placeholder:string = '搜索题目'
@@ -24,5 +26,10 @@ export struct SearchBox {
     .layoutWeight(this.layoutWeightValue)  // 自适应会覆盖固定大小
     .borderRadius(this.boxHeight / 2)
     .backgroundColor(this.boxBackColor)
+    .onClick(()=>{  // 调转到搜索页面
+      router.pushUrl({
+        url: 'pages/SearchPage'
+      })
+    })
   }
 }

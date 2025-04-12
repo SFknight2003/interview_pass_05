@@ -1,7 +1,7 @@
-import { HmSkeleton, HmSkeletonItem, HmTag, QuestionItemComp, QuestionListComp } from "../../components"
-import { http, UserStoreKey } from "../../utils"
+import { HmSkeleton, HmSkeletonItem, HmTag, QuestionItemComp, QuestionListComp } from "../../common/components"
+import { http, UserStoreKey } from "../../common/utils"
 import { Filter, promptAction } from "@kit.ArkUI"
-import { QuestionItem, SortType } from "../../../models"
+import { QuestionItem, SortType } from "../../models"
 
 export interface QuestionType {
   id: number

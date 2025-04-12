@@ -4,6 +4,7 @@ export * from './StatusBar'
 export * from './Http'
 export * from './Auth'
 export * from './Tracking'
+export * from './History'
 
 const day = 60 * 60 * 24
 const hour = 60 * 60

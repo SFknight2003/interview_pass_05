@@ -1,6 +1,6 @@
 import { CustomCalendar, ClockIn, SearchBox } from "../common/components"
-import { auth, http, UserStoreKey } from "../common/utils"
-import { HomeCategory } from "../common/views/Home/HomeCategory"
+import { auth, http, tracking, UserStoreKey } from "../common/utils"
+import { HomeCategory } from "../views/Home/HomeCategory"
 import { QuestionDetail, QuestionItem, User } from "../models"
 import { promptAction, router } from "@kit.ArkUI"
 import { scanBarcode } from "@kit.ScanKit"
@@ -69,7 +69,10 @@ export struct HomePage {
       })
     }
   }
-
+  // 进入首页进行一次埋点上送
+  aboutToAppear(): void {
+    tracking.report(true)
+  }
   build() {
     Column(){
       // TODO: 扫码组件

@@ -1,9 +1,9 @@
 import { HmLoadingDialog, HmNavBar, HmTag } from '../common/components'
 import { QuestionDetail, QuestionOptParams, QuestionPageParams } from '../models'
 import { promptAction, router } from '@kit.ArkUI'
-import { http } from '../common/utils'
+import { http, tracking } from '../common/utils'
 import { webview } from '@kit.ArkWeb'
-import { QuestionShareDialog } from '../common/views/question/QuestionShareDialog'
+import { QuestionShareDialog } from '../views/question/QuestionShareDialog'
 
 @Entry
 @Component
@@ -13,6 +13,8 @@ struct QuestionPage {
   @State item: QuestionDetail = {} as QuestionDetail
   list: QuestionDetail[] = []
   @State activeIndex:number = 0
+  // 进入时间
+  startTime: number = Date.now()
   // 网页控制器
   controller:WebviewController = new webview.WebviewController
   // 加载弹层控制器
@@ -41,8 +43,20 @@ struct QuestionPage {
     this.controller.loadUrl($rawfile('question.html'))
   }
 
+  // 打开和隐藏试题页面时埋点
+  onPageShow(): void {
+    // 记录开始时间
+    this.startTime = Date.now()
+  }
+
+  onPageHide(): void {
+    tracking.record( this.item.id, this.startTime, Date.now()) // 记录
+    this.startTime = Date.now() // 每次记录完，更新时间（放置上下题没有离开页面）
+    tracking.report() // 上述
+  }
+
   /**
-   * @Description:切换方法
+   * @Description:试题切换方法
    * @about: 传入参数步数，下一题1 上一题-1
    */
   async toggleQuestion (step: number) {
@@ -70,6 +84,10 @@ struct QuestionPage {
     // this.controller.loadUrl($rawfile('question.html'))
     // 重新运行脚本内容
     this.controller.runJavaScript(`writeHtml(\`${this.item.answer}\`)`)
+
+    // 切换题目后刷新时间
+    tracking.record(item.id, this.startTime, Date.now())
+    this.startTime = Date.now()
   }
 
   /**

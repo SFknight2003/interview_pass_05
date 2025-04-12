@@ -25,6 +25,9 @@ export struct QuestionListComp {
       this.isRefreshing = true  // 排序方式改变，切换到自动下拉
     }
   }
+  // 搜索参数 可以为空
+  @Prop
+  keyword:string = ''
   // 当前页数
   @State page : number = 1
   // 下拉刷新加载
@@ -107,7 +110,8 @@ export struct QuestionListComp {
         questionBankType: 10,
         sort: this.sort,
         page: this.page,
-        pageSize: 10
+        pageSize: 10,
+        keyword : this.keyword    // 如果有keyword关键字 则是搜索调用该接口
       } as QuestionListParams
     })
   }

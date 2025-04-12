@@ -1,5 +1,5 @@
-import { QuestionDetail, User } from "../../../models"
-import { UserStoreKey } from "../../utils"
+import { QuestionDetail, User } from "../../models"
+import { UserStoreKey } from "../../common/utils"
 import { componentSnapshot, promptAction } from "@kit.ArkUI"
 import { image } from "@kit.ImageKit"
 import { fileIo, fileUri } from "@kit.CoreFileKit"
