@@ -1,5 +1,5 @@
 import { CustomCalendar, ClockIn, SearchBox } from "../common/components"
-import { auth, http, tracking, UserStoreKey } from "../common/utils"
+import { auth, http, requestClockIn, tracking, UserStoreKey } from "../common/utils"
 import { HomeCategory } from "../views/Home/HomeCategory"
 import { QuestionDetail, QuestionItem, User } from "../models"
 import { promptAction, router } from "@kit.ArkUI"
@@ -96,7 +96,9 @@ export struct HomePage {
         // 打卡
         ClockIn({
           clockCount : this.user.clockinNumbers
-        })
+        }).onClick(()=>{
+            requestClockIn()
+          })
       }
       .height(48)
       .width('100%')

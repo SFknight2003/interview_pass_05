@@ -1,8 +1,9 @@
 import { router } from '@kit.ArkUI'
 import { ClockIn } from '../common/components'
-import { statusBar, formatTime, UserStoreKey, logger,http, auth } from '../common/utils'
+import { statusBar, formatTime, UserStoreKey, logger,http, auth, requestClockIn } from '../common/utils'
 import { User } from '../models'
 import { JSON } from '@kit.ArkTS'
+import { request } from '@kit.BasicServicesKit'
 
 interface Nav {
   icon: ResourceStr
@@ -125,6 +126,9 @@ export struct MinePage {
             })
         }
         ClockIn({ clockCount: this.user.clockinNumbers || 0 }) // 传入打卡天数
+          .onClick(()=>{
+            requestClockIn()
+          })
       }
       .width('100%')
       .height(100)
@@ -152,7 +156,12 @@ export struct MinePage {
           // other: this.user.totalTime?.toString(), // 传入
           other: formatTime(this.user.totalTime), // 传入
           onClick: () => {
-            // TODO
+            // 鉴权跳转
+            auth.checkAuth(()=>{
+              router.pushUrl({
+                url : 'pages/StudyTimePage'
+              })
+            })
           }
         })
       }
@@ -163,7 +172,10 @@ export struct MinePage {
       Column() {
         this.toolsBuilder({
           icon: $r('app.media.ic_mine_notes'), name: '开发常用词', onClick: () => {
-            // TODO
+            // 跳转
+            router.pushUrl({
+              url: "pages/WordPage"
+            })
           }
         })
         this.toolsBuilder({ icon: $r('app.media.ic_mine_ai'), name: '面通AI', onClick:()=>{

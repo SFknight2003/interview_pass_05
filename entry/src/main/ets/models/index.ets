@@ -90,3 +90,50 @@ export interface TimeItem {
   startTime: number
   endTime: number
 }
+
+// 打卡数据
+  //响应参数类型
+export interface ClockInItem {
+  id: string,
+  createdAt: string
+}
+  // 响应结果
+export interface ClockInfo {
+  flag: boolean
+  clockinNumbers: number
+  totalClockinNumber: number
+  clockins: ClockInItem[]
+}
+  //请求参数类型
+export interface ClockInfoParams {
+  year: string,
+  month: string
+}
+
+// 累计学时
+// 学习时间
+export interface StudyTimeItem {
+  id: string
+  name: string
+  total: number
+  done: number  // 已完成
+  undone: number  // 未完成
+}
+export interface StudyTimeCate {
+  type: string,
+  list: StudyTimeItem[]
+}
+export interface StudyTimeData {
+  totalTime: number,
+  studyData: StudyTimeCate[]
+}
+
+// 单词
+export interface WordItem{
+  en: string,
+  zh: string,
+  code: string
+}
+// 有一些类型，不是对象也可也用type声明类型
+  // 起别名
+export type Words = Record<string,WordItem[]>
