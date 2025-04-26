@@ -8,7 +8,7 @@
   "devDependencies": {},
   "dependencies": {
     "@ohos/axios": "^2.2.5",
-    "@ohmos/calendar": "^2.1.4"
+    "@ohmos/calendar": "^2.1.4",
   },
   "dynamicDependencies": {}
 }
