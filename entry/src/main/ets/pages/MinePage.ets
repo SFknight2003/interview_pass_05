@@ -184,8 +184,8 @@ export struct MinePage {
           // })
         } })
         this.toolsBuilder({ icon: $r('app.media.ic_mine_invite'), name: '面试录音', onClick:()=> {
-          router.pushUrl({
-            url:'pages/AudioPage'
+          auth.checkAuth({
+            url: 'pages/AudioPage'
           })
         } })
         this.toolsBuilder({ icon: $r('app.media.ic_mine_file'), name: '意见反馈' })

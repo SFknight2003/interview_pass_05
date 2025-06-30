@@ -9,6 +9,7 @@
   "dependencies": {
     "@ohos/axios": "^2.2.5",
     "@ohmos/calendar": "^2.1.4",
+    "@hview/dayjs": "^1.11.11"
   },
   "dynamicDependencies": {}
 }

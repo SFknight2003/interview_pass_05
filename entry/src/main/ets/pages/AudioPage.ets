@@ -4,7 +4,7 @@ import { media } from '@kit.MediaKit'
 import { fileIo } from '@kit.CoreFileKit'
 import { logger } from '../common/utils'
 import { relationalStore } from '@kit.ArkData'
-import text from '@ohos.graphics.text'
+import { AudioView } from '../views/Audio/AudioView'
 
 @Entry
 @Component
@@ -220,66 +220,68 @@ struct AudioPage {
 
   build() {
     Column({space:5}) {
-      AudioBoComp({ maxAmplitude: this.maxAmplitude })
-      Button('录音').onClick(()=>{
-          this.startRecord()
-        })
-      Button('停止录音').onClick(()=>{
-        this.stopRecord()
-      })
-      Button('播放录音').onClick(()=>{
-        this.playRecord()
-      })
+      // AudioBoComp({ maxAmplitude: this.maxAmplitude })  // 振幅
 
-      Button('创建数据库').onClick(()=>{
-        this.createStore()
-      })
-      Button('添加').onClick(() => {
-        this.store?.insert(this.tableName, {
-          // id: null,  逐渐可以省略不写
-          name: '测试' + Math.random(),
-          age: Math.floor(Math.random()*100)
-        })
-        promptAction.showToast({
-          message:"插入成功"
-        })
-      })
-      Button('查询总条数').onClick(async () => {
-          const predicates = new relationalStore.RdbPredicates(this.tableName)  // 拿到字典
-          const resultSet = await this.store?.query(predicates)
-          this.total = resultSet?.rowCount || 0
-        })
-      Text('总条数' + this.total)
-      Button('查询所有数据').onClick(async () => {
-          const predicates = new relationalStore.RdbPredicates(this.tableName)
-          const resultSet = await this.store?.query(predicates)
-          const list: UserInfo[] = []
-          while (resultSet?.goToNextRow()) {
-            list.push({
-              id: resultSet.getLong(resultSet.getColumnIndex('id')),
-              name: resultSet.getString(resultSet.getColumnIndex('name')),
-              age: resultSet.getLong(resultSet.getColumnIndex('age')),
-            })
-          }
-          resultSet?.close()
-          this.userList = list
-        })
-      Text(JSON.stringify(this.userList))
-      Button('修改第一条').onClick(() => {
-        const item = this.userList[0]
-        item.name = 'xxxx测试' + Math.random()
-        const predicates = new relationalStore.RdbPredicates(this.tableName)
-        predicates.equalTo('id', item.id)
-        this.store?.updateSync(item, predicates)
-      })
-      Button('删除第一条').onClick(() => {
-        const item = this.userList[0]
-        const predicates = new relationalStore.RdbPredicates(this.tableName)
-        predicates.equalTo('id', item.id)
-        this.store?.deleteSync(predicates)
-      })
-      Button('删除数据库').onClick(() => { this.deleteStore() })
+      AudioView()
 
+      // Button('录音').onClick(()=>{
+      //     this.startRecord()
+      //   })
+      // Button('停止录音').onClick(()=>{
+      //   this.stopRecord()
+      // })
+      // Button('播放录音').onClick(()=>{
+      //   this.playRecord()
+      // })
+      //
+      // Button('创建数据库').onClick(()=>{
+      //   this.createStore()
+      // })
+      // Button('添加').onClick(() => {
+      //   this.store?.insert(this.tableName, {
+      //     // id: null,  逐渐可以省略不写
+      //     name: '测试' + Math.random(),
+      //     age: Math.floor(Math.random()*100)
+      //   })
+      //   promptAction.showToast({
+      //     message:"插入成功"
+      //   })
+      // })
+      // Button('查询总条数').onClick(async () => {
+      //     const predicates = new relationalStore.RdbPredicates(this.tableName)  // 拿到字典
+      //     const resultSet = await this.store?.query(predicates)
+      //     this.total = resultSet?.rowCount || 0
+      //   })
+      // Text('总条数' + this.total)
+      // Button('查询所有数据').onClick(async () => {
+      //     const predicates = new relationalStore.RdbPredicates(this.tableName)
+      //     const resultSet = await this.store?.query(predicates)
+      //     const list: UserInfo[] = []
+      //     while (resultSet?.goToNextRow()) {
+      //       list.push({
+      //         id: resultSet.getLong(resultSet.getColumnIndex('id')),
+      //         name: resultSet.getString(resultSet.getColumnIndex('name')),
+      //         age: resultSet.getLong(resultSet.getColumnIndex('age')),
+      //       })
+      //     }
+      //     resultSet?.close()
+      //     this.userList = list
+      //   })
+      // Text(JSON.stringify(this.userList))
+      // Button('修改第一条').onClick(() => {
+      //   const item = this.userList[0]
+      //   item.name = 'xxxx测试' + Math.random()
+      //   const predicates = new relationalStore.RdbPredicates(this.tableName)
+      //   predicates.equalTo('id', item.id)
+      //   this.store?.updateSync(item, predicates)
+      // })
+      // Button('删除第一条').onClick(() => {
+      //   const item = this.userList[0]
+      //   const predicates = new relationalStore.RdbPredicates(this.tableName)
+      //   predicates.equalTo('id', item.id)
+      //   this.store?.deleteSync(predicates)
+      // })
+      // Button('删除数据库').onClick(() => { this.deleteStore() })
     }
     .height('100%')
     .width('100%')
@@ -289,40 +291,6 @@ struct AudioPage {
   }
 }
 
-// 振幅效果
-@Component
-struct AudioBoComp {
-  @Prop @Watch('onChange') maxAmplitude: number // 帧数数据
-  @State percent: number = 0  // 百分比
-  onChange() {
-    animateTo({ duration: 100 }, () => {
-      if (this.maxAmplitude < 500) {
-        this.percent = 0
-      } else if (this.maxAmplitude > 30000) {
-        this.percent = 1
-      } else {
-        this.percent = this.maxAmplitude / 30000
-      }
-    })
-  }
-
-  build() {
-    Row({ space: 5 }) {
-      ForEach(Array.from({ length: 30 }), () => {
-        Column()
-          .layoutWeight(1)
-          .height(this.percent * 100 * Math.random())
-          .backgroundColor($r('app.color.common_blue'))
-          .constraintSize({
-            minHeight:4
-          })
-      })
-    }
-    .width('100%')
-    .height(100)
-    .padding(16)
-  }
-}
 
 interface UserInfo extends relationalStore.ValuesBucket{
   id : number,
