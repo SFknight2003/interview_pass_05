@@ -1,7 +1,10 @@
 import { router } from '@kit.ArkUI';
 import { HmNavBar } from '../common/components';
 import { auth } from '../common/utils/Auth';
+import { theme } from '../common/utils/Theme';
 import { User } from '../models';
+import { SettingsThemeDialog } from '../views/Setting/SettingsThemeDialog';
+import { ConfigurationConstant } from '@kit.AbilityKit';
 
 export interface Tool {
   icon?: ResourceStr
@@ -52,6 +55,15 @@ struct SettingsPage {
     })
   }
 
+  dialog = new CustomDialogController({
+    builder: SettingsThemeDialog(),
+    alignment: DialogAlignment.Bottom
+  })
+
+  // 获取主题状态
+  @StorageProp(theme.themeKey)
+  colorMode:ConfigurationConstant.ColorMode = ConfigurationConstant.ColorMode.COLOR_MODE_LIGHT
+
   build() {
     Column() {
       HmNavBar({ title: '设置', showRightIcon: false, showBorder: true })
@@ -72,10 +84,11 @@ struct SettingsPage {
         this.toolsBuilder({ name: '消息推送', radius: 1 })
         this.toolsBuilder({
           name: '深色模式',
-          value: '已关闭',
+          value: this.colorMode === ConfigurationConstant.ColorMode.COLOR_MODE_DARK ? "已开启" : "关闭",
           radius: 1,
           onClick: () => {
-            // TODO 设置主题
+            // 设置主题
+            this.dialog.open()
           }
         })
         this.toolsBuilder({

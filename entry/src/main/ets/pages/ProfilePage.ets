@@ -1,10 +1,11 @@
-import { auth, http, UserStoreKey } from '../common/utils'
+import { auth, http, logger, UserStoreKey } from '../common/utils'
 import { User } from '../models'
 import { HmLoadingDialog, HmNavBar } from '../common/components'
 import { promptAction } from '@kit.ArkUI'
 import { photoAccessHelper } from '@kit.MediaLibraryKit'
 import { FormData } from '@ohos/axios'
 import fileIo from '@ohos.file.fs'
+import { image } from '@kit.ImageKit'
 
 @Entry
 @Component
@@ -41,27 +42,45 @@ struct ProfilePage {
     const picker = new photoAccessHelper.PhotoViewPicker()
     const result = await picker.select(option) // 唤起选择
     const uri = result.photoUris[0] // 图片地址
-    // const file_name = fs.statSync(uri);
     this.dialog.open()
-    // 3、压缩图片（可选）
-    // const imageSource = image.createImageSource(uri);
-    // const pixelMap = await imageSource.createPixelMap();  // 读取图片为PixelMap
-    // const packer = image.createImagePacker()
-    // const buffer = await packer.packing(pixelMap, { format:'image/jpeg', quality:98 })  // 压缩
+
     // 2、存放到沙箱 -  cache - internal
-    const file = fileIo.openSync(uri,fileIo.OpenMode.READ_ONLY) // 打开图片
-    fileIo.copyFileSync(file.fd, getContext().cacheDir+'/'+file.name)  // 拷贝图片
-    fileIo.closeSync(file.fd)  // 关闭
-    // const compressedPath = `${getContext().cacheDir}/${file_name}`;
-    // let file = fs.openSync(compressedPath, fs.OpenMode.READ_WRITE | fs.OpenMode.CREATE);
-    // fs.writeSync(file.fd, buffer);
-    // fs.closeSync(file.fd)
+      // 普通存放（无压缩）
+    // const file = fileIo.openSync(uri,fileIo.OpenMode.READ_ONLY) // 打开图片
+    // fileIo.copyFileSync(file.fd, getContext().cacheDir+'/'+file.name)  // 拷贝图片
+    // fileIo.closeSync(file.fd)  // 关闭
+
+    // 压缩存放
+      // 普通压缩
+    // const originFile = fileIo.openSync(uri, fileIo.OpenMode.READ_ONLY)
+    // const imageSource = image.createImageSource(originFile.fd);  // 创建图片源
+    // const imagePacker = image.createImagePacker()   // 创建打包器
+    // const arrayBuffer = await imagePacker.packing(imageSource, { format: "image/jpeg", quality: 70})  // 压缩
+    // const newFilePath = getContext(this).cacheDir + '/' + Date.now() + '.jpg'
+    // const newFile = fileIo.openSync(newFilePath, fileIo.OpenMode.CREATE | fileIo.OpenMode.READ_WRITE) // 创建新文件
+    // fileIo.writeSync(newFile.fd, arrayBuffer) // 写入保存
+    // logger.debug('size', fileIo.statSync(newFile.fd).size.toString())
+    // fileIo.closeSync(newFile.fd)
+
+      // 压缩图片（pixelMap）
+    const originFile = fileIo.openSync(uri, fileIo.OpenMode.READ_ONLY)
+    const imageSource = image.createImageSource(originFile.fd);  // 创建图片源
+    const pixelMap = await imageSource.createPixelMap();  // 读取图片为PixelMap
+    const packer = image.createImagePacker()
+    const buffer = await packer.packing(pixelMap, { format:'image/jpeg', quality:98 })  // 压缩
+    const newFilePath = getContext(this).cacheDir + '/' + Date.now() + '.jpg'
+    let newFile = fileIo.openSync(newFilePath, fileIo.OpenMode.READ_WRITE | fileIo.OpenMode.CREATE);
+    fileIo.writeSync(newFile.fd, buffer);
+    fileIo.closeSync(newFile.fd)
+    pixelMap.release();
+
     // 如何限制大小？
     // fileIo.statSync(file).size
     // 4、发送图片给后台
     const formData = new FormData();
-    formData.append('file','internal://cache/' + file.name);
-    // formData.append('file','internal://cache/' + file_name);
+    // formData.append('file','internal://cache/' + file.name);
+    formData.append('file', `internal://cache/${newFile.name}`) // 压缩版
+
     await http.request<string>({
       url: 'hm/userInfo/avatar',
       method: 'post',

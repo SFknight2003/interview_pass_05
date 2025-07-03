@@ -3,6 +3,7 @@ import { ProjectPage } from './ProjectPage';
 import { InterviewPage } from './InterviewPage';
 import { MinePage } from './MinePage';
 import { auth } from '../common/utils';
+import { theme } from '../common/utils/Theme';
 
 /**
  * @Description: 主框架页面
@@ -10,6 +11,7 @@ import { auth } from '../common/utils';
 
 // 进行持久化声明
 auth.initUser()
+theme.initTheme()
 
 // 数据定义
 interface TabItems{
