@@ -1,10 +1,12 @@
-import { router } from '@kit.ArkUI';
+import { App, promptAction, router } from '@kit.ArkUI';
 import { HmNavBar } from '../common/components';
 import { auth } from '../common/utils/Auth';
 import { theme } from '../common/utils/Theme';
 import { User } from '../models';
 import { SettingsThemeDialog } from '../views/Setting/SettingsThemeDialog';
-import { ConfigurationConstant } from '@kit.AbilityKit';
+import { bundle, bundleManager, ConfigurationConstant } from '@kit.AbilityKit';
+import { fileIo, storageStatistics } from '@kit.CoreFileKit';
+import File from '@system.file';
 
 export interface Tool {
   icon?: ResourceStr
@@ -64,6 +66,51 @@ struct SettingsPage {
   @StorageProp(theme.themeKey)
   colorMode:ConfigurationConstant.ColorMode = ConfigurationConstant.ColorMode.COLOR_MODE_LIGHT
 
+  @State
+  cache:string = ''
+
+  @State
+  appVersion:string = ''
+
+  // 获取应用版本信息
+  getVersion(){
+    this.appVersion = 'V' +  bundleManager.getBundleInfoForSelfSync(bundleManager.BundleFlag.GET_BUNDLE_INFO_WITH_APPLICATION).versionName
+  }
+
+  // 获取缓存
+  calcCache(){
+    storageStatistics.getCurrentBundleStats() // 获取当前状态
+      .then(res => {
+        this.cache = (res.cacheSize/1000/1000).toFixed(2) + 'MB'
+      })
+  }
+
+  // 清空缓存
+  clearCache(){
+    // 沙箱
+    const dirPath = getContext().cacheDir
+    // 检测沙箱是否有内容
+    const ctx = fileIo.accessSync(dirPath)
+    if ( ctx ) {
+      fileIo.rmdirSync(dirPath)
+    }
+    // 应用
+    const appDirPath = getContext().getApplicationContext().cacheDir
+    const appCtxContent = fileIo.accessSync(appDirPath)
+    if ( appCtxContent ) {
+      fileIo.rmdirSync(appDirPath)
+    }
+    promptAction.showToast({
+      message:"清空完毕"
+    })
+    this.calcCache()
+  }
+  // 每次打开页面都更新缓存
+  onPageShow(): void {
+    this.calcCache()
+    this.getVersion()
+  }
+
   build() {
     Column() {
       HmNavBar({ title: '设置', showRightIcon: false, showBorder: true })
@@ -92,11 +139,12 @@ struct SettingsPage {
           }
         })
         this.toolsBuilder({
-          name: '清除应用缓存', value: '10MB', onClick: () => {
-            // TODO 清除缓存
+          name: '清除应用缓存', value: this.cache, onClick: () => {
+            // 清除缓存
+            this.clearCache()
           }
         })
-        this.toolsBuilder({ name: '当前版本', value: '1.0.0', radius: 2 })
+        this.toolsBuilder({ name: '当前版本', value: this.appVersion, radius: 2 })
         Blank()
           .height(15)
         Text('退出账号')

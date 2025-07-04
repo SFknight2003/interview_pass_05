@@ -12,6 +12,8 @@ export interface QuestionType {
 @Component
 export struct HomeCategory {
   controller: TabsController = new TabsController()
+  @StorageProp('isDark')
+  isDark:boolean = false
   @State questionTypeList: QuestionType[] = []
   // 当前分类
   @State activeIndex: number = 0
@@ -248,7 +250,7 @@ export struct HomeCategory {
         .width(56)
         .height(44)
         .justifyContent(FlexAlign.Center)
-        .linearGradient({ angle: 90, colors: [['#00FFFFFF', 0], ['#FFFFFF', 0.285]] })
+        .linearGradient({ angle: 90, colors: [[this.isDark ? '#00131313' : '#00FFFFFF', 0], [this.isDark ? '#00131313':'#FFFFFF', 0.285]] })
         .margin({
           top : 5
         })

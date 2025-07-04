@@ -1,4 +1,4 @@
-import { ConfigurationConstant } from '@kit.AbilityKit'
+import { common, ConfigurationConstant } from '@kit.AbilityKit'
 
 class Theme {
   themeKey:string = 'ThemeKey';
@@ -18,6 +18,12 @@ class Theme {
     AppStorage.set(this.themeKey, theme)
     // 应用及逆行设置
     getContext().getApplicationContext().setColorMode(theme)
+    // 获取当前主题
+    const ctx = AppStorage.get<Context>('context')
+    // 系统读取
+    const isDark =  (ctx as common.UIAbilityContext).config.colorMode === ConfigurationConstant.ColorMode.COLOR_MODE_DARK
+    AppStorage.setOrCreate('isDark', isDark)
+
   }
 
   // 3、跟随系统（不设置主题）
