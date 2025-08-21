@@ -1,0 +1,42 @@
+OpenRouter-key: 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
+
+curl https://openrouter.ai/api/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $OPENROUTER_API_KEY" \
+  -d '{
+  "model": "deepseek/deepseek-r1:free",
+  "messages": [
+    {
+      "role": "user",
+      "content": "What is the meaning of life?"
+    }
+  ]
+}'
+
+curl https://openrouter.ai/api/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $OPENROUTER_API_KEY" \
+  -d '{
+  "model": "deepseek/deepseek-chat-v3-0324:free",
+  "messages": [
+    {
+      "role": "user",
+      "content": "What is the meaning of life?"
+    }
+  ]
+}'
+
+deepseek官网
+sk-ecaacc28992b4b59a644dff15208383c
+
+curl https://api.deepseek.com/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <DeepSeek API Key>" \
+  -d '{
+        "model": "deepseek-chat",
+        "messages": [
+          {"role": "system", "content": "You are a helpful assistant."},
+          {"role": "user", "content": "Hello!"}
+        ],
+        "stream": false
+      }'

@@ -10,6 +10,7 @@ export * from './Http'
 export * from './Auth'
 export * from './Tracking'
 export * from './History'
+export * from './DeepSeekRcp'
 
 const day = 60 * 60 * 24
 const hour = 60 * 60

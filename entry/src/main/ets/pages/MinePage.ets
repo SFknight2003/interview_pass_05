@@ -184,9 +184,10 @@ export struct MinePage {
           }
         })
         this.toolsBuilder({ icon: $r('app.media.ic_mine_ai'), name: '面通AI', onClick:()=> {
-          // router.pushUrl({
-          //   url:'pages/SocketAI'
-          // })
+          auth.checkAuth({
+            // url:'pages/SocketAI'
+            url:'pages/AIPage'
+          })
         } })
         this.toolsBuilder({ icon: $r('app.media.ic_mine_invite'), name: '面试录音', onClick:()=> {
           auth.checkAuth({

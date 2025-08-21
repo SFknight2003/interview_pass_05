@@ -10,6 +10,7 @@
     "pages/WordPage",
     "pages/AudioPage",
     "pages/SettingPage",
-    "pages/ProfilePage"
+    "pages/ProfilePage",
+    "pages/AIPage"
   ]
 }
